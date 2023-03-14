@@ -28,7 +28,7 @@ class Product(models.Model):
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=10)
+    phone = models.CharField(max_length=15, default='')
     shipping_address = models.TextField()
 
     def __str__(self):
@@ -51,7 +51,7 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     customer_email = models.EmailField()
     order_total= models.DecimalField(max_digits=6, decimal_places=2)
-    status = models.CharField(max_length=1, choices=ORDER_STATUS_CHOICE, default='pending')
+    status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICE, default='pending')
 
     def __str__(self):
         return f'Order {self.id}'    
