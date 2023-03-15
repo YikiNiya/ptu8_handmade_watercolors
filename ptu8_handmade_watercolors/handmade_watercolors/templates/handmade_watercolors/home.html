@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Welcome to"|capfirst %} {{ block.super }}{% endblock title %}
+{% block content %}
+  <h1>{% trans "Welcome"|capfirst %}!</h1>
+  <p>{% trans "Browse our products and categories" %}:</p>
+  <ul>
+    {% for category in categories %}
+      <li></li>
+    {% endfor %}
+  </ul>
+  <h2>{% trans "Featured Products" %}</h2>
+  <ul>
+    {% for product in products %}
+      <li></li>
+    {% endfor %}
+  </ul>
+{% endblock content %}

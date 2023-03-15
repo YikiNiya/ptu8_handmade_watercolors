@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+{% load static i18n %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Handmade Watercolors{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'admin/css/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'handmade_watercolors/css/style.css' %}">
+    {% block extra_head %}
+    {% endblock %}
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'product_list' %}">Products</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <div>
+            <p>&copy; 2023 Handmade Watercolors.</p>
+        </div>
+    </footer>
+    {% block extra_scripts %}
+    {% endblock %}
+</body>
+</html>

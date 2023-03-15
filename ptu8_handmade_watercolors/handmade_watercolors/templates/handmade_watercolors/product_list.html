@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Products{% endblock %}
+{% block content %}
+    <h1>Products</h1>
+    <ul>
+    {% for product in products %}
+        <li>
+            <a href="{% url 'product_detail' product.pk %}">
+                {{ product.name }}
+            </a>
+            <p>{{ product.description }}</p>
+            <p>{{ product.price }}€ </p>
+            <p>{{ product.category }}</p>
+            <ul>
+            {% for review in product.reviews.all %}
+                <li>{{ review.author }} - {{ review.text }}</li>
+            {% empty %}
+                <li>No reviews yet.</li>
+            {% endfor %}
+            </ul>
+        </li>
+    {% empty %}
+        <li>No products found.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
