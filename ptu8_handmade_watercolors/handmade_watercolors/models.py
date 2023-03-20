@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from tinymce.models import HTMLField
 
 User = get_user_model()
 
@@ -15,7 +16,7 @@ class Product(models.Model):
     )
 
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=250, default='', blank=True, null=True)
+    description = HTMLField(max_length=250, default='', blank=True, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     image = models.ImageField(upload_to='products', null=True, blank=True)
     stock_level = models.IntegerField(default=0)
@@ -50,7 +51,7 @@ class Order(models.Model):
     date = models.DateTimeField(default=timezone.now)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     customer_email = models.EmailField()
-    order_total= models.DecimalField(max_digits=6, decimal_places=2)
+    order_total = models.DecimalField(max_digits=6, decimal_places=2)
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICE, default='pending')
 
     def __str__(self):
@@ -70,15 +71,33 @@ class Subcategory(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.user.username}'s cart"
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey('Cart', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=False)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name}"
+
 
 class ProductReview(models.Model):
     RATING_CHOICES = (
-        (1, '⭐'),
-        (2, '⭐⭐'),
-        (3, '⭐⭐⭐'),
-        (4, '⭐⭐⭐⭐'),
-        (5, '⭐⭐⭐⭐⭐')
+        ('⭐', '⭐'),
+        ('⭐⭐', '⭐⭐'),
+        ('⭐⭐⭐', '⭐⭐⭐'),
+        ('⭐⭐⭐⭐', '⭐⭐⭐⭐'),
+        ('⭐⭐⭐⭐⭐', '⭐⭐⭐⭐⭐')
     )
 
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='reviews')
@@ -86,7 +105,7 @@ class ProductReview(models.Model):
     date = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=255)
     body = models.TextField()
-    rating = models.CharField(max_length=1, choices=RATING_CHOICES, default='')
+    rating = models.CharField(max_length=5, choices=RATING_CHOICES, default='')
 
     def __str__(self):
         return f'{self.user.username} - {self.product.name}'

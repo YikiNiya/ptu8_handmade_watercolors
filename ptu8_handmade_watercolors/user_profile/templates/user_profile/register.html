@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Sign up to {{ block.super }}{% endblock title %}
+{% block content %}
+<h1>Member Registration</h1>
+<form method="post" action="{{ request.path }}">
+    {% csrf_token %}
+    <p><label for="username">Username:</label><input type="text" name="username" value="{{ request.POST.username }}">
+    <small>up to 100 symbols.<small></p>
+    <p><label for="email">Email:</label><input type="email" name="email" value="{{ request.POST.email }}"></p>
+    <p><label for="password1">Password:</label><input type="password" name="password1">
+    <small>minimum 8 symbols and cannot be only numbers, must have at least one capital.</small></p>
+    <p><label for="password2">Confirm Password:</label><input type="password" name="password2"></p>
+    <p><button type="submit">Sign up</button></p>
+</form>
+{% endblock content %}

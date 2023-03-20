@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Log into {{ block.super }}{% endblock title %}
+{% block content %}
+<h1>Log in</h1>
+{% if form.errors %}
+    <div class="alert alert-error">Error while logging in. Please try again.</div>
+{% endif %}
+<form method="post" action="{% url 'login' %}?next={{ request.GET.next }}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Log in</button>
+</form>
+<p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+{% endblock content %}

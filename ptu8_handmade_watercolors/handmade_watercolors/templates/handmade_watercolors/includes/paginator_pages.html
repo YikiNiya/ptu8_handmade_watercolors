@@ -1,0 +1,11 @@
+{% if page_obj.has_other_pages %}
+    <div class="paginator">
+        {% for pages in page_obj.paginator.page_range %}
+            {% if page.obj.number == page %}
+                <span class="current">{{ page }}</span>
+            {% else %}
+                <a href="?page={{ page }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.product_id %}&product_id={{ request.GET.product_id }}{% endif %}">{{ page }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}

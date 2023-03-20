@@ -9,7 +9,7 @@
             <a href="{% url 'product_detail' product.pk %}">
                 {{ product.name }}
             </a>
-            <p>{{ product.description }}</p>
+            {{ product.description|safe }}
             <p>{{ product.price }}€ </p>
             <p>{{ product.category }}</p>
             <ul>

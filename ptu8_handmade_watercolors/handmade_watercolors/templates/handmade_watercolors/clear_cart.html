@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>Clear Cart</h1>
+  <p>Are you sure you want to clear your cart?</p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Clear Cart</button>
+    <a href="{% url 'cart' %}" class="btn btn-primary">Cancel</a>
+  </form>
+{% endblock %}

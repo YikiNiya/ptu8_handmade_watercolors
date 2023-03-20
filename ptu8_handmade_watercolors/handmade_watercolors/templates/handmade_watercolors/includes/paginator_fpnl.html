@@ -1,0 +1,13 @@
+<div class="paginator">
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.product_id %}&product_id={{ request.GET.product_id }}{% endif %}">&laquo; First</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.product_id %}&product_id={{ request.GET.product_id }}{% endif %}">Previous</a>
+    {% endif %}
+    <span class="current flex-grow-one">
+        {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.product_id %}&product_id={{ request.GET.product_id }}{% endif %}">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.product_id %}&product_id={{ request.GET.product_id }}{% endif %}">Last &raquo;</a>
+    {% endif %}
+</div>

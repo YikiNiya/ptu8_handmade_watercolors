@@ -7,28 +7,34 @@
     <title>{% block title %}Handmade Watercolors{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'admin/css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'handmade_watercolors/css/style.css' %}">
-    {% block extra_head %}
-    {% endblock %}
+    <style>{% block style %}{% endblock style %}</style>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'product_list' %}">Products</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        {% block content %}
-        {% endblock %}
+    <header><div class="container">
+        <ul>
+            <li class="logo">Handmade Watercolors {% trans "handmade watercolors"|capfirst %}</li>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'product_list' %}">Products</a></li>
+            {% if request.user.is_authenticated %}
+                <span class="user-info">{{ request.user}}</span>
+                <li><a href="{% url 'logout' %}">{% trans "log out"|capfirst %}</a></li>
+            {% else %}
+                <span class="user-info"></span>
+                <li><a href="{% url 'login' %}{% if request.path != '/accounts/logout/' %}?next={{ request.path }}{% endif %}">{% trans "log in"|capfirst %}</a></li>
+                <li><a href="{% url 'register' %}">{% trans "sign up"|capfirst %}</a></li>
+            {% endif %}
+        </ul>
+    </div></header>
+    <main><div class="container">
+        {% block messages %}
+        {% if messages %}
+            {% for messages in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor%}
+        {% endif %}
+        {% endblock messages %}
+        {% block content %}{% endblock content%}</div>
     </main>
-    <footer>
-        <div>
-            <p>&copy; 2023 Handmade Watercolors.</p>
-        </div>
-    </footer>
-    {% block extra_scripts %}
-    {% endblock %}
+    <footer><div class="container"><p>&copy; 2023 Handmade Watercolors {% trans "team"|capfirst %}</p></div></footer>
 </body>
 </html>

@@ -31,8 +31,20 @@ class SubcategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'category')
     search_fields = ('name', 'category__name')
 
+
+class ProductReviewAdmin(admin.ModelAdmin):
+    list_display = ('title', 'product', 'user', 'date', 'rating')
+    list_filter = ('product', 'rating', 'date')
+    search_fields = ('title', 'body', 'user__username', 'product__name')
+    ordering = ('-date',)
+    fieldsets = (
+        (None, {'fields': ('product', 'user')}),
+        ('Review Info', {'fields': ('title', 'body', 'rating')}),
+    )
+
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Customer)
 admin.site.register(models.Order, OrderAdmin)
 admin.site.register(models.Category, CategoryAdmin)
 admin.site.register(models.Subcategory, SubcategoryAdmin)
+admin.site.register(models.ProductReview, ProductReviewAdmin)
