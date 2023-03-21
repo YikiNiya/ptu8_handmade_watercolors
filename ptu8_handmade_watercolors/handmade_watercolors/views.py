@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from . import models
@@ -6,8 +6,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseBadRequest
-
+from . forms import OrderForm
 
 def home(request):
     products = models.Product.objects.all()
@@ -88,32 +87,46 @@ class SubcategoryListView(generic.ListView):
     context_object_name = 'subcategories'
 
 
-def add_to_cart(request, pk):
-    product = get_object_or_404(models.Product, pk=pk)
-    cart = request.session.get('cart', {})
-    cart[pk] = cart.get(pk, {'quantity': 0})
-    cart[pk]['quantity'] += 1
-    request.session['cart'] = cart
-    messages.success(request, f'{product.name} has been added to your cart!')
-    return redirect(reverse('cart'))
+class OrderView(generic.View):
+    def get(self, request):
+        customer = request.session.get('customer')
+        orders = models.Order.objects.filter(customer=customer)
+        return render(request, 'handmade_watercolors/orders.html', {'orders': orders})
 
-def update_cart(request):
-    cart = request.session.get('cart', {})
-    for pk, item in cart.items():
-        quantity = request.POST.get(f'quantity_{pk}')
-        if quantity and quantity.isdigit() and int(quantity) > 0:
-            item['quantity']
 
-def remove_from_cart(request, pk):
-    cart = request.session.get('cart', {})
-    if pk in cart:
-        del cart[pk]
-        request.session['cart'] = cart
-        messages.success(request, 'Product removed from cart successfully')
-    else:
-        messages.warning(request, 'Product not found in cart.')
-    return redirect('cart')
+class CheckoutView(generic.View):
+    def get_checkout(self, request):
+        form = OrderForm()
+        customer = models.Customer.objects.get(user=request.user)
+        cart_items = models.CartItem.objects.filter(cart__customer=customer)
+        return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart_items': cart_items})
+    
+    def post(self, request):
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            customer = models.Customer.objects.get(user=request.user)
+            cart = models.Cart.objects.get(customer=customer)
+            order = models.Order()
+            order.customer = customer
+            order.customer_email = form.cleaned_data['email']
+            order.order_total = cart.cart_total
+            order.status = 'pending'
+            order.save()
+            for cart_item in models.CartItem.objects.filter(cart=cart):
+                order_item = models.OrderItem
+                order_item.order = order
+                order_item.product = cart_item.product
+                order_item.quantity = cart_item.quantity
+                order_item.price = cart_item.price
+                order_item.save()
+                cart_item.delete()
+            return redirect('orders')
+        else:
+            customer = models.Customer.objects.get(user=request.user)
+            cart_items = models.CartItem.objects.filter(cart__customer=customer)
+            return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart_items': cart_items})
 
+@login_required
 def cart(request):
     cart = request.session.get('cart', {})
     cart_items = []
@@ -134,9 +147,47 @@ def cart(request):
     return render(request, 'handmade_watercolors/cart.html', context)
 
 @login_required
+def add_to_cart(request, product_id):
+    product = models.Product.objects.get(id=product_id)
+    cart = request.session.get('cart', {})
+    cart_item = cart.get(str(product_id))
+    if cart_item is None:
+        cart[str(product_id)] = {'quantity': 1, 'price': str(product.price)}
+    else:
+        cart_item['quantity'] += 1
+        cart[str(product_id)] = cart_item
+    request.session['cart'] = cart
+    return redirect(reverse('cart'))
+
+@login_required
+def update_cart(request, product_id):
+    product = models.Product.objects.get(id=product_id)
+    cart = request.session.get('cart', {})
+    cart_item = cart.get(str(product_id))
+    if cart_item is not None:
+        quantity = int(request.POST.get('quantity'))
+        cart_item['quantity'] = quantity
+        cart[str(product_id)] = cart_item
+    request.session['cart'] = cart
+    return redirect(reverse('cart'))
+
+@login_required
+def remove_from_cart(request, product_id):
+    product = models.Product.objects.get(id=product_id)
+    cart = request.session.get('cart', {})
+    cart_item = cart.get(str(product_id))
+    if cart_item is not None:
+        cart_item['quantity'] -=1
+        if cart_item['quantity'] <= 0:
+            del cart[str(product_id)]
+        else:
+            cart[str(product_id)] = cart_item
+        request.session['cart'] = cart
+    return HttpResponseRedirect(reverse('cart'))
+
+@login_required
 def clear_cart(request):
     if request.method == 'POST':
-        cart = models.Cart.objects.get(user=request.user)
-        cart.delete()
+        request.session['cart'] = {}
         return redirect('cart')
     return render(request, 'handmade_watercolors/clear_cart.html')

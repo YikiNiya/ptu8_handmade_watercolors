@@ -15,8 +15,10 @@
             <li class="logo">Handmade Watercolors {% trans "handmade watercolors"|capfirst %}</li>
             <li><a href="{% url 'home' %}">Home</a></li>
             <li><a href="{% url 'product_list' %}">Products</a></li>
+            <li><a href="{% url 'cart' %}">Cart</a></li>
             {% if request.user.is_authenticated %}
                 <span class="user-info">{{ request.user}}</span>
+                <li><a href="{% url 'orders' %}">Orders</a></li>
                 <li><a href="{% url 'logout' %}">{% trans "log out"|capfirst %}</a></li>
             {% else %}
                 <span class="user-info"></span>

@@ -1,6 +1,6 @@
 body {
-  background-color: #efd1f5;
-  color: #7d03ad;
+  background-color: #a3d0f5;
+  color: #0369ad;
   margin: 0;
   padding: 0;
   display: grid;
@@ -128,7 +128,7 @@ form p small {
   border-bottom: 1px solid #345;
 }
 
-.alert {
+/* .alert {
   border: 1px solid #345;
   border-radius: 8px;
   padding: 4px 16px;
@@ -153,4 +153,4 @@ form p small {
 
 .alert-warning {
   background-color: #fc07;
-}
+} */

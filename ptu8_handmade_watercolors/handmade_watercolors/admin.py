@@ -8,14 +8,17 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('customer__user__username', 'product__name')
     
 
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ( 'id', 'order', 'product', 'quantity', 'price')
+    list_filter = ('order', 'product')
+
+
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'subcategory', 'price', 'status', 'stock_level', 'image')
     list_filter = ('category', 'status')
     search_fields = ('name', 'description', 'category__name', 'subcategory__name')
     readonly_fields = ('image',)
 
-    # def image_thumbnail(self, obj):
-    #     return format_html('<')
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'num_products')
@@ -42,9 +45,27 @@ class ProductReviewAdmin(admin.ModelAdmin):
         ('Review Info', {'fields': ('title', 'body', 'rating')}),
     )
 
+
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'product', 'quantity')
+    list_filter = ('user', 'product')
+    search_fields = ('user__username', 'product__name')
+    readonly_fields = ('id',)
+
+
+class CartItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'cart', 'product', 'quantity')
+    list_filter = ('cart', 'product')
+    search_fields = ('product__name',)
+    readonly_fields = ('id',)
+
+
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Customer)
 admin.site.register(models.Order, OrderAdmin)
+admin.site.register(models.OrderItem, OrderItemAdmin)
 admin.site.register(models.Category, CategoryAdmin)
 admin.site.register(models.Subcategory, SubcategoryAdmin)
 admin.site.register(models.ProductReview, ProductReviewAdmin)
+admin.site.register(models.Cart, CartAdmin)
+admin.site.register(models.CartItem, CartItemAdmin)

@@ -58,6 +58,13 @@ class Order(models.Model):
         return f'Order {self.id}'    
 
 
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+
 class Category(models.Model):
     name = models.CharField(max_length=255)
 
@@ -77,6 +84,7 @@ class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+    cart_total = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.user.username}'s cart"
@@ -86,6 +94,7 @@ class CartItem(models.Model):
     cart = models.ForeignKey('Cart', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=False)
     quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
