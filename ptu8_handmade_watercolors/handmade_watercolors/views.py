@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from . forms import OrderForm
+from .templatetags.cart_tags import get_cart_items
 
 def home(request):
     products = models.Product.objects.all()
@@ -94,37 +95,74 @@ class OrderView(generic.View):
         return render(request, 'handmade_watercolors/orders.html', {'orders': orders})
 
 
+
+    # def get_checkout(self, request):
+    #     form = OrderForm()
+    #     if request.user.is_authenticated:
+    #         try:
+    #             customer = models.Customer.objects.get(user=request.user)
+    #         except models.Customer.DoesNotExist:
+    #             # Create a new Customer model object for the request.user
+    #             customer = models.Customer(user=request.user)
+    #             customer.save()
+    #         cart_items = models.CartItem.objects.filter(cart__customer=customer)
+    #         return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart_items': cart_items})
+    #     return redirect('login')
 class CheckoutView(generic.View):
     def get_checkout(self, request):
-        form = OrderForm()
-        customer = models.Customer.objects.get(user=request.user)
-        cart_items = models.CartItem.objects.filter(cart__customer=customer)
-        return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart_items': cart_items})
+        cart = request.session.get('cart', {})
+        total_price = cart.get_total_price()
+        context = {
+            'cart_items': get_cart_items(request),
+            'total_price': total_price,
+        }
+        return render(request, 'handmade_watercolors/checkout.html', context)
+        
+        
+        # form = OrderForm()
+        # customer = models.Customer.objects.get(user=request.user)
+        # cart_items = []
+        # cart = request.session.get('cart', {})
+        # for product_id, item_data in cart.items():
+        #     product = get_object_or_404(models.Product, id=product_id)
+        #     item_price = product.price * item_data['quantity']
+        #     cart_items.append({
+        #         'product': product,
+        #         'quantity': item_data['quantity'],
+        #         'item_price': item_price,
+        #     })
+        # return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart_items': cart_items})
+
+        
     
     def post(self, request):
         form = OrderForm(request.POST)
         if form.is_valid():
-            customer = models.Customer.objects.get(user=request.user)
-            cart = models.Cart.objects.get(customer=customer)
+            cart_items = request.session.get('cart_items', {})
             order = models.Order()
-            order.customer = customer
+            order.customer = request.user
             order.customer_email = form.cleaned_data['email']
-            order.order_total = cart.cart_total
+            order.order_total = sum(item['item_price'] for item in cart_items.values())
             order.status = 'pending'
             order.save()
-            for cart_item in models.CartItem.objects.filter(cart=cart):
-                order_item = models.OrderItem
+            for product_id, item in cart_items.items():
+                product = models.Product.objects.get(pk=product_id)
+                order_item = models.OrderItem()
                 order_item.order = order
-                order_item.product = cart_item.product
-                order_item.quantity = cart_item.quantity
-                order_item.price = cart_item.price
+                order_item.product = product
+                order_item.quantity = item['quantity']
+                order_item.price = item['item_price']
                 order_item.save()
-                cart_item.delete()
-            return redirect('orders')
+            request.session['cart_items'] = {}
+            message = 'Your order was successfully placed. Thank you!'
+            return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'message': message})
         else:
-            customer = models.Customer.objects.get(user=request.user)
-            cart_items = models.CartItem.objects.filter(cart__customer=customer)
+            cart_items = request.session.get('cart_items', {})
             return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart_items': cart_items})
+            
+@staticmethod
+def order_item_total(item):
+    return item.quantity * item.product.price
 
 @login_required
 def cart(request):

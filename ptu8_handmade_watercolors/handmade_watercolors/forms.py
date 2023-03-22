@@ -5,19 +5,19 @@ from . import models
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = models.Customer
-        fields = ['phone', 'shipping_address']
+        fields = ['user', 'phone', 'shipping_address']
 
 
 class OrderForm(forms.ModelForm):
     class Meta:
         model = models.Order
-        fields = ['quantity', 'customer_email']
+        fields = ['product', 'quantity', 'customer_email']
 
 
 class CartItemForm(forms.ModelForm):
     class Meta:
         model = models.CartItem
-        fields = ['quantity']
+        fields = ['product', 'quantity']
 
 
 class ProductReviewForm(forms.ModelForm):

@@ -102,11 +102,11 @@ class CartItem(models.Model):
 
 class ProductReview(models.Model):
     RATING_CHOICES = (
-        ('⭐', '⭐'),
-        ('⭐⭐', '⭐⭐'),
-        ('⭐⭐⭐', '⭐⭐⭐'),
-        ('⭐⭐⭐⭐', '⭐⭐⭐⭐'),
-        ('⭐⭐⭐⭐⭐', '⭐⭐⭐⭐⭐')
+        (1, '⭐'),
+        (2, '⭐⭐'),
+        (3, '⭐⭐⭐'),
+        (4, '⭐⭐⭐⭐'),
+        (5, '⭐⭐⭐⭐⭐')
     )
 
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='reviews')
@@ -114,7 +114,7 @@ class ProductReview(models.Model):
     date = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=255)
     body = models.TextField()
-    rating = models.CharField(max_length=5, choices=RATING_CHOICES, default='')
+    rating = models.IntegerField(choices=RATING_CHOICES, default='')
 
     def __str__(self):
         return f'{self.user.username} - {self.product.name}'
