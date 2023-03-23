@@ -16,8 +16,10 @@
 /* Style the "Add to Cart" button */
 .add-to-cart-btn {background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;}
 .add-to-cart-btn:hover {background-color: #0062cc;}
-.add-to-cart-btn:active {background-color: #005cbf;
-}
+.add-to-cart-btn:active {background-color: #005cbf;}
+.back-to-products-btn {background-color: #5f13ec; color: #5f13ec;; border: 1px solid #007bff; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;}
+.back-to-products-btn:hover {background-color: #007bff; color: #fff; text-decoration: none;}
+.back-to-products-btn:active {background-color: #0062cc; color: #fff; text-decoration: none;}
 {% endblock style %}
 {% block content %}
     <div class="row">
@@ -38,7 +40,14 @@
         </div>
         <button type="submit" class="btn btn-primary">Add to Cart</button>
       </form>
-      <a href="{% url 'product_list' %}" class="btn btn-secondary mt-3">Back to Products</a>
+      <a href="{% url 'product_list' %}" class="btn btn-secondary mt-3 back-to-products-btn">Back to Products</a>
+      <button type="button" class="btn btn-success mt-3" id="write-review-btn">Write a Review</button>
     </div>
   </div>
+  <script>
+    const writeReviewBtn = document.getElementById('write-review-btn');
+    writeReviewBtn.addEventListener('click', () => {
+      window.location.href = "{% url 'add_review' product.id %}";
+    });
+  </script>
 {% endblock %}

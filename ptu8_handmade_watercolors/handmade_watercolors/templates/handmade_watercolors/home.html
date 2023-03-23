@@ -2,53 +2,16 @@
 {% load i18n %}
 {% block title %}{% trans "Welcome to"|capfirst %} {{ block.super }}{% endblock title %}
 {% block style %}
-.carousel-item {
-  height: 500px;
-}
-
-.carousel-item img {
-  height: 100%;
-  object-fit: cover;
-}
-
+.carousel-item {height: 500px;}
+.carousel-item img {height: 100%; object-fit: cover;}
 .carousel-control-prev-icon,
-.carousel-control-next-icon {
-  height: 50px;
-  width: 50px;
-  outline: black;
-  background-size: 100%, 100%;
-  border-radius: 50%;
-  border: 1px solid black;
-  background-image: none;
-  margin-top: -25px;
-}
+.carousel-control-next-icon {height: 50px; width: 50px; outline: black; background-size: 100%, 100%; border-radius: 50%; border: 1px solid black; background-image: none; margin-top: -25px;}
 .carousel-control-prev,
-.carousel-control-next {
-  height: 100%;
-  top: 0;
-  bottom: 0;
-  width: auto;
-  margin-top: 0;
-  padding: 0 15px;
-  color: black;
-  text-shadow: none;
-  background-color: rgba(255, 255, 255, 0.3);
-  border: none;
-  font-size: 40px;
-}
+.carousel-control-next {height: 100%; top: 0; bottom: 0; width: auto; margin-top: 0; padding: 0 15px; color: black; text-shadow: none; background-color: rgba(255, 255, 255, 0.3); border: none; font-size: 40px;}
 .carousel-control-prev:hover,
-.carousel-control-next:hover {
-  color: black;
-  text-decoration: none;
-  background-color: rgba(255, 255, 255, 0.6);
-}
+.carousel-control-next:hover {color: black; text-decoration: none; background-color: rgba(255, 255, 255, 0.6);}
 .carousel-control-prev:focus,
-.carousel-control-next:focus {
-  outline: none;
-  color: black;
-  text-decoration: none;
-  background-color: rgba(255, 255, 255, 0.6);
-}
+.carousel-control-next:focus {outline: none; color: black; text-decoration: none; background-color: rgba(255, 255, 255, 0.6);}
 {% endblock style %}
 {% block content %}
   <h1>{% trans "Welcome"|capfirst %}!</h1>
@@ -102,18 +65,33 @@
       <li></li>
     {% endfor %}
   </ul>
-  <h2>{% trans "Featured Products" %}</h2>
-  <ul>
-    {% for product in products %}
-    <div class="col">
-    <div class="card text-center mb-3" style="width: 18rem;">
-      <img src="{{ product.image_url }}" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">{{ product.name }}</h5>
-        <p class="card-text"> {{ product.description|safe }} €{{ product.price }}</p>
-        <a href="{% url 'product_detail' pk=product.pk %}" class="btn btn-primary">View product</a>
-      </div>
-    </div>
+<style>
+.card {margin-bottom: 20px;}
+.card-container {width: 100%;}
+.card-column {float: left; width: calc(25% - 20px); margin-right: 20px;}
+@media (max-width: 1200px) {
+  .card-column {width: calc(33.33% - 20px);}
+    } 
+@media (max-width: 992px) {
+  .card-column {width: calc(50% - 20px);}
+    }
+@media (max-width: 768px) {
+  .card-column {width: 100%; margin-right: 0; margin-bottom: 20px;}
+    }
+</style>
+    <h2>{% trans "Featured Products" %}</h2>
+    <div class="card-container">
+      {% for product in products %}
+        <div class="card-column">
+          <div class="card text-center mb-3">
+            <img src="{{ product.image_url }}" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text">{{ product.description|safe }} €{{ product.price }}</p>
+              <a href="{% url 'product_detail' pk=product.pk %}" class="btn btn-primary">View product</a>
+            </div>
+          </div>
+        </div>
     {% endfor %}
   </ul>
 {% endblock content %}

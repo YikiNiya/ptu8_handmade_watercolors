@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
   <h1>Product Reviews</h1>
   {% if product.reviews.count > 0 %}
@@ -16,16 +15,28 @@
   {% else %}
     <p>No reviews yet.</p>
   {% endif %}
-{% endblock %}
 
-
-
-{% comment %} {% extends 'base.html' %}
-{% block content %}
-  <h1>Add Review for {{ product.name }}</h1>
-  <form method="post">
+  <h2>Add a Review</h2>
+  <form method="post" action="{% url 'add_review' product_id=product.id %}">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit Review">
+    <div class="form-group">
+      <label for="id_title">Title</label>
+      <input type="text" name="title" id="id_title" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="id_body">Body</label>
+      <textarea name="body" id="id_body" class="form-control" rows="4" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="id_rating">Rating</label>
+      <select name="rating" id="id_rating" class="form-control" required>
+        <option value="1">⭐ - Poor</option>
+        <option value="2">⭐⭐ - Fair</option>
+        <option value="3">⭐⭐⭐ - Average</option>
+        <option value="4">⭐⭐⭐⭐ - Good</option>
+        <option value="5">⭐⭐⭐⭐⭐ - Excellent</option>
+      </select>
+    </div>
+    <button type="submit">Submit Review</button>
   </form>
-{% endblock %} {% endcomment %}
+{% endblock %}

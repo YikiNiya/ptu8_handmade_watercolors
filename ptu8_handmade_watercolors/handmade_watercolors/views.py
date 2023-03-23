@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from . forms import OrderForm, ProductReviewForm
 from .templatetags.cart_tags import get_cart_items, get_cart_total_price
+from django.db.models import Avg
 
 
 def home(request):
@@ -19,12 +20,12 @@ def home(request):
     }
     return render(request, 'handmade_watercolors/home.html', context)
 
-def product_detail(request, pk):
-    product = get_object_or_404(models.Product, pk=pk)
-    reviews = product.reviews.all()
+def product_detail(request, product_id):
+    product = get_object_or_404(models.Product, pk=product_id)
+    average_rating = models.ProductReview.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
     context = {
         'product': product,
-        'reviews': reviews,
+        'average_rating': average_rating,
     }
     return render(request, 'handmade_watercolors/product_detail.html', context)
 
@@ -38,7 +39,7 @@ def add_review(request, product_id):
             review.product = product
             review.user = request.user
             review.save()
-            return redirect('product_detail', product_id=product.id)
+            return redirect('product_detail', pk=product.id)
     else:
         form = ProductReviewForm()
     return render(request, 'handmade_watercolors/review.html', {'form': form, 'product': product})
@@ -47,7 +48,17 @@ class ProductListView(generic.ListView):
     model = models.Product
     template_name = 'handmade_watercolors/product_list.html'
     context_object_name = 'products'
-    paginate_by = 5
+    paginate_by = None
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('search')
+        if query:
+            queryset = queryset.filter(
+                Q(name__istartswith=query) | Q(description__istartswith=query)
+            )
+        queryset = queryset.annotate(avg_rating=Avg('reviews__rating'))
+        return queryset
 
     def product_list(request):
         queryset = models.Product.objects
@@ -56,7 +67,7 @@ class ProductListView(generic.ListView):
             queryset = queryset.filter(
                 Q(name__istartswith=query) | Q(description__istartswith=query)
             )
-        paginator = Paginator(queryset, 4)
+        paginator = Paginator(queryset, 10)
         page_number = request.GET.get('page')
         products = paginator.get_page(page_number)
         return render(request, 'handmade_watercolors/product_list.html', {
@@ -110,19 +121,6 @@ class OrderView(generic.View):
         return render(request, 'handmade_watercolors/orders.html', {'orders': orders})
 
 
-
-    # def get_checkout(self, request):
-    #     form = OrderForm()
-    #     if request.user.is_authenticated:
-    #         try:
-    #             customer = models.Customer.objects.get(user=request.user)
-    #         except models.Customer.DoesNotExist:
-    #             # Create a new Customer model object for the request.user
-    #             customer = models.Customer(user=request.user)
-    #             customer.save()
-    #         cart_items = models.CartItem.objects.filter(cart__customer=customer)
-    #         return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart_items': cart_items})
-    #     return redirect('login')
 class CheckoutView(generic.View):
     def get_checkout(self, request):
         cart_items = get_cart_items(request)
@@ -130,23 +128,6 @@ class CheckoutView(generic.View):
         context = {'cart_items': cart_items, 'total_price': total_price}
         return render(request, 'handmade_watercolors/checkout.html', context)
         
-        
-        # form = OrderForm()
-        # customer = models.Customer.objects.get(user=request.user)
-        # cart_items = []
-        # cart = request.session.get('cart', {})
-        # for product_id, item_data in cart.items():
-        #     product = get_object_or_404(models.Product, id=product_id)
-        #     item_price = product.price * item_data['quantity']
-        #     cart_items.append({
-        #         'product': product,
-        #         'quantity': item_data['quantity'],
-        #         'item_price': item_price,
-        #     })
-        # return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart_items': cart_items})
-
-        
-    
     def post(self, request):
         form = OrderForm(request.POST)
         if form.is_valid():
