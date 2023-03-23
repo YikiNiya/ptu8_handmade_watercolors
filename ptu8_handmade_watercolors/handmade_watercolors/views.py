@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from . forms import OrderForm
+from . forms import OrderForm, ProductReviewForm
 from .templatetags.cart_tags import get_cart_items, get_cart_total_price
 
 
@@ -28,6 +28,20 @@ def product_detail(request, pk):
     }
     return render(request, 'handmade_watercolors/product_detail.html', context)
 
+@login_required
+def add_review(request, product_id):
+    product = get_object_or_404(models.Product, pk=product_id)
+    if request.method == 'POST':
+        form = ProductReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.user = request.user
+            review.save()
+            return redirect('product_detail', product_id=product.id)
+    else:
+        form = ProductReviewForm()
+    return render(request, 'handmade_watercolors/review.html', {'form': form, 'product': product})
 
 class ProductListView(generic.ListView):
     model = models.Product

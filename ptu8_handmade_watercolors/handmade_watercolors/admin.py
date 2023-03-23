@@ -14,10 +14,9 @@ class OrderItemAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'subcategory', 'price', 'status', 'stock_level', 'image')
+    list_display = ('name', 'image_url', 'category', 'subcategory', 'price', 'status', 'stock_level')
     list_filter = ('category', 'status')
     search_fields = ('name', 'description', 'category__name', 'subcategory__name')
-    readonly_fields = ('image',)
 
 
 class CategoryAdmin(admin.ModelAdmin):

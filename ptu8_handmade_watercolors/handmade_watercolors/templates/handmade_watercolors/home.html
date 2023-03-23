@@ -103,24 +103,17 @@
     {% endfor %}
   </ul>
   <h2>{% trans "Featured Products" %}</h2>
-  <ul class="list-unstyled">
+  <ul>
     {% for product in products %}
-    <li class="mb-3">
-      <div class="card" style="width: 18rem;">
-        <img src="https://cdn.shopify.com/s/files/1/0121/5456/8762/products/20220810_201210108_iOS_cba1f797-3de1-4cad-9c26-426c936c8ae6_grande.jpg?v=1662951651" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Chameleon</h5>
-          <p class="card-text">Mica 12 grid Handmade watercolor paint travel mini set 36.00€</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
-        <img src="https://cdn.shopify.com/s/files/1/0121/5456/8762/products/20230315_203848315_iOS_grande.jpg?v=1678998933" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Christmas</h5>
-          <p class="card-text">Christmas 12 grid Super Color Shift Chameleon Duo Chrome Mica Handmade watercolor paint travel mini set 70.00€</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
+    <div class="col">
+    <div class="card text-center mb-3" style="width: 18rem;">
+      <img src="{{ product.image_url }}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">{{ product.name }}</h5>
+        <p class="card-text"> {{ product.description|safe }} €{{ product.price }}</p>
+        <a href="{% url 'product_detail' pk=product.pk %}" class="btn btn-primary">View product</a>
       </div>
-    </li>
+    </div>
     {% endfor %}
   </ul>
 {% endblock content %}

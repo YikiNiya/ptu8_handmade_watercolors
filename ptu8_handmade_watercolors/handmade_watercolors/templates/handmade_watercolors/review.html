@@ -1,4 +1,26 @@
 {% extends 'base.html' %}
+
+{% block content %}
+  <h1>Product Reviews</h1>
+  {% if product.reviews.count > 0 %}
+    <ul>
+      {% for review in product.reviews.all %}
+        <li>
+          <h3>{{ review.title }}</h3>
+          <p>{{ review.body }}</p>
+          <p>Rating: {% for i in review.get_rating_display %} {{ i }} {% endfor %}</p>
+          <p>Posted by {{ review.user.username }} on {{ review.date|date:"F j, Y" }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No reviews yet.</p>
+  {% endif %}
+{% endblock %}
+
+
+
+{% comment %} {% extends 'base.html' %}
 {% block content %}
   <h1>Add Review for {{ product.name }}</h1>
   <form method="post">
@@ -6,4 +28,4 @@
     {{ form.as_p }}
     <input type="submit" value="Submit Review">
   </form>
-{% endblock %}
+{% endblock %} {% endcomment %}

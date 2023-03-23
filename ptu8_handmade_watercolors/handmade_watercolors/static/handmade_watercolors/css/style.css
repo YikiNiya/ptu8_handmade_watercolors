@@ -211,8 +211,6 @@ button[type="submit"]:hover {
   color: red;
   margin-bottom: 15px;
 }
-
-
 .alert {
   border: 1px solid #345;
   border-radius: 8px;

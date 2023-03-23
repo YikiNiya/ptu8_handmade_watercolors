@@ -1,16 +1,34 @@
 {% extends 'base.html' %}
 {% block title %}{{ object.title }} in {{ block.super }}{% endblock title %}
+{% block style %}
+/* Center the content of the page */
+.container {display: flex; flex-direction: column; align-items: center;}
+/* Style the product image */
+.product-image {width: 100%; max-width: 500px; margin-bottom: 20px;}
+/* Style the product name */
+.product-name {font-size: 24px; font-weight: bold; margin-bottom: 10px;}
+/* Style the product price */
+.product-price {font-size: 12px; margin-bottom: 20px;}
+/* Style the product description */
+.product-description {font-size: 20px; margin-bottom: 20px; line-height: 1.5;}
+/* Style the quantity input */
+.quantity-input {width: 80px; height: 40px; text-align: center; margin-right: 10px;}
+/* Style the "Add to Cart" button */
+.add-to-cart-btn {background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;}
+.add-to-cart-btn:hover {background-color: #0062cc;}
+.add-to-cart-btn:active {background-color: #005cbf;
+}
+{% endblock style %}
 {% block content %}
     <div class="row">
         <div class="col-md-6">
-        {% if product.image %}
-            <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
+        {% if product.image_url %}
+            <img src="{{ product.image_url }}" class="img-fluid" alt="{{ product.name }}">
         {% endif %}
     </div>
     <div class="col-md-6">
         <h2>{{ product.name }}</h2>
         <h4>Price: {{ product.price }}€</h4>
-      <h4>Stock Level: {{ product.stock_level }}</h4>
       {{ product.description|safe }}
       <form method="post" action="{% url 'add_to_cart' product.id %}">
         {% csrf_token %}
@@ -20,6 +38,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Add to Cart</button>
       </form>
+      <a href="{% url 'product_list' %}" class="btn btn-secondary mt-3">Back to Products</a>
     </div>
   </div>
 {% endblock %}
