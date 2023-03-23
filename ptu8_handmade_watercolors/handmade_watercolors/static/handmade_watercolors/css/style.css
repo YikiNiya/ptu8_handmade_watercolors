@@ -127,8 +127,93 @@ form p small {
   width: 100%;
   border-bottom: 1px solid #345;
 }
+h1 {
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-/* .alert {
+p {
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.table {
+  margin-top: 30px;
+  
+}
+
+/* Style table header */
+thead {
+  background-color: #e9ecef;
+}
+
+/* Style table header cells */
+thead th {
+  border: none;
+  font-weight: bold;
+  text-align: left;
+}
+
+/* Style table body cells */
+tbody td {
+  border-top: none;
+}
+
+/* Style quantity input */
+input[type="number"] {
+  width: 70px;
+}
+
+/* Style checkout form */
+form {
+  margin-top: 30px;
+}
+
+/* Style form groups */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* Style form labels */
+label {
+  font-weight: bold;
+}
+
+/* Style form input fields */
+input[type="text"], input[type="email"], input[type="tel"], input[type="password"], select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Style form button */
+button[type="submit"] {
+  background-color: #5f13ec;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+/* Style form button on hover */
+button[type="submit"]:hover {
+  background-color: #5f13ec;
+}
+
+/* Style error messages */
+.errorlist {
+  color: red;
+  margin-bottom: 15px;
+}
+
+
+.alert {
   border: 1px solid #345;
   border-radius: 8px;
   padding: 4px 16px;
@@ -153,4 +238,4 @@ form p small {
 
 .alert-warning {
   background-color: #fc07;
-} */
+}

@@ -1,5 +1,68 @@
 {% extends 'base.html' %}
 {% load cart_tags %}
+{% block style %}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody td:last-child,
+tfoot td:last-child {
+  font-weight: bold;
+}
+
+.btn {
+  margin-top: 8px;
+}
+
+.text-right {
+  text-align: right;
+}
+form {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex-basis: 50%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media only screen and (max-width: 600px) {
+  .form-group {
+    flex-basis: 100%;
+  }
+}
+{% endblock style %}
 {% block content %}
 
 <h1>Cart</h1>
@@ -19,7 +82,7 @@
         <tr>
           <td>{{ item.product.name }}</td>
           <td>
-            <form method="post" action="{% url 'add_to_cart' item.product.id %}">
+            {% comment %} <form method="post" action="{% url 'add_to_cart' item.product.id %}"> {% endcomment %}
               {% csrf_token %}
               <input type="hidden" name="product_id" value="{{ item.product.id }}">
               <div class="form-group">
@@ -27,13 +90,13 @@
               </div>
               <button type="submit" class="btn btn-primary">Update</button>
             </form>
-             <div class="col-md-4">
-          <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
-            {% csrf_token %}
-            <input type="hidden" name="item_id" value="{{ item.id }}">
-            <button type="submit" class="btn btn-danger">Remove from Cart</button>
-          </form>
-        </div>
+            <div class="col-md-4">
+              {% comment %} <form method="post" action="{% url 'remove_from_cart' item.product.id %}"> {% endcomment %}
+                {% csrf_token %}
+                <input type="hidden" name="item_id" value="{{ item.id }}">
+                <button type="submit" class="btn btn-danger">Remove from Cart</button>
+              </form>
+            </div>
           </td>
           <td>{{ item.product.price }}€</td>
           <td>{{ item.total }}€</td>
@@ -48,38 +111,70 @@
 
   <!-- Checkout Form -->
   <h2>Checkout</h2>
-  <form method="post" action="{% url 'checkout' %}">
-    {% csrf_token %}
-    <div class="form-group">
-      <label for="first-name">First Name:</label>
-      <input type="text" name="first-name" id="first-name" class="form-control" required>
-    </div>
+<form method="post" action="{% url 'checkout' %}">
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="first-name">First Name:</label>
+    <input type="text" name="first-name" id="first-name" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="last-name">Last Name:</label>
+    <input type="text" name="last-name" id="last-name" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="email">Email Address:</label>
+    <input type="email" name="email" id="email" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="country">Country:</label>
+    <input type="text" name="country" id="country" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="city">City:</label>
+    <input type="text" name="city" id="city" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="zip-code">Zip Code:</label>
+    <input type="text" name="zip-code" id="zip-code" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="shipping-address">Shipping Address:</label>
+    <input type="text" name="shipping-address" id="shipping-address" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="phone">Phone Number:</label>
+    <input type="tel" name="phone" id="phone" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="card-number">Card Number:</label>
+    <input type="text" name="card-number" id="card-number" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="payment-method">Payment Method:</label>
+    <select name="payment-method" id="payment-method" class="form-control" required>
+      <option value="">Choose Payment Method</option>
+      <option value="debit-card">Debit Card</option>
+      <option value="credit-card">Credit Card</option>
+      <option value="paypal">PayPal</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="card-name">Name on Card:</label>
+    <input type="text" name="card-name" id="card-name" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="expiration-date">Expiration Date:</label>
+    <input type="text" name="expiration-date" id="expiration-date" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="cvv">CVV:</label>
+    <input type="text" name="cvv" id="cvv" class="form-control" required>
+  </div>
+<button type="submit" class="btn btn-primary">Place Order</button>
 
-    <div class="form-group">
-      <label for="last-name">Last Name:</label>
-      <input type="text" name="last-name" id="last-name" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-      <label for="address">Address:</label>
-      <input type="text" name="address" id="address" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-      <label for="phone">Phone Number:</label>
-      <input type="tel" name="phone" id="phone" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-      <label for="card-number">Card Number:</label>
-      <input type="text" name="card-number" id="card-number" class="form-control" required>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Place Order</button>
-  </form>
-
+</form>
 {% else %}
+
   <p>Your cart is empty.</p>
 {% endif %}
-
 {% endblock %}

@@ -1,18 +1,126 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% block title %}{% trans "Welcome to"|capfirst %} {{ block.super }}{% endblock title %}
+{% block style %}
+.carousel-item {
+  height: 500px;
+}
+
+.carousel-item img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  height: 50px;
+  width: 50px;
+  outline: black;
+  background-size: 100%, 100%;
+  border-radius: 50%;
+  border: 1px solid black;
+  background-image: none;
+  margin-top: -25px;
+}
+.carousel-control-prev,
+.carousel-control-next {
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  width: auto;
+  margin-top: 0;
+  padding: 0 15px;
+  color: black;
+  text-shadow: none;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: none;
+  font-size: 40px;
+}
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  color: black;
+  text-decoration: none;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+.carousel-control-prev:focus,
+.carousel-control-next:focus {
+  outline: none;
+  color: black;
+  text-decoration: none;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+{% endblock style %}
 {% block content %}
   <h1>{% trans "Welcome"|capfirst %}!</h1>
   <p>{% trans "Browse our products and categories" %}:</p>
+  <div class="text-center">
+    <div id="carouselExampleIndicators" class="carousel slide">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4" aria-label="Slide 5"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="5" aria-label="Slide 6"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="6" aria-label="Slide 7"></button>
+      </div> 
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="https://media.jacksonsart.com/catalog/product/cache/3/image/1000x/9df78eab33525d08d6e5fb8d27136e95/W/I/WIO8HPS9.JPG" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="https://cdn.shopify.com/s/files/1/0121/5456/8762/files/20230223_022214915_iOS_970x@2x.jpg?v=1677224866" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="https://cdn.shopify.com/s/files/1/0121/5456/8762/products/20220616_211430113_iOS_1200x1200.jpg?v=1655438291" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="https://i.pinimg.com/originals/e4/97/19/e497197157e1adaaaa22d72576619d77.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="https://cdn.shopify.com/s/files/1/0121/5456/8762/products/il_fullxfull.3725066409_fhhr_1200x1200.jpg?v=1646207690" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="https://media.jacksonsart.com/catalog/product/cache/3/image/1000x1000/9df78eab33525d08d6e5fb8d27136e95/P/-/P-IULIWP.JPG" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="https://i.etsystatic.com/8631701/r/il/9dd6d9/2549547998/il_fullxfull.2549547998_ld3c.jpg" class="d-block w-100" alt="...">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
   <ul>
     {% for category in categories %}
       <li></li>
     {% endfor %}
   </ul>
   <h2>{% trans "Featured Products" %}</h2>
-  <ul>
+  <ul class="list-unstyled">
     {% for product in products %}
-      <li></li>
+    <li class="mb-3">
+      <div class="card" style="width: 18rem;">
+        <img src="https://cdn.shopify.com/s/files/1/0121/5456/8762/products/20220810_201210108_iOS_cba1f797-3de1-4cad-9c26-426c936c8ae6_grande.jpg?v=1662951651" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Chameleon</h5>
+          <p class="card-text">Mica 12 grid Handmade watercolor paint travel mini set 36.00€</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+        <img src="https://cdn.shopify.com/s/files/1/0121/5456/8762/products/20230315_203848315_iOS_grande.jpg?v=1678998933" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Christmas</h5>
+          <p class="card-text">Christmas 12 grid Super Color Shift Chameleon Duo Chrome Mica Handmade watercolor paint travel mini set 70.00€</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+      </div>
+    </li>
     {% endfor %}
   </ul>
 {% endblock content %}

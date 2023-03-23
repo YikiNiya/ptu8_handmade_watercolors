@@ -7,7 +7,8 @@ from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from . forms import OrderForm
-from .templatetags.cart_tags import get_cart_items
+from .templatetags.cart_tags import get_cart_items, get_cart_total_price
+
 
 def home(request):
     products = models.Product.objects.all()
@@ -110,12 +111,9 @@ class OrderView(generic.View):
     #     return redirect('login')
 class CheckoutView(generic.View):
     def get_checkout(self, request):
-        cart = request.session.get('cart', {})
-        total_price = cart.get_total_price()
-        context = {
-            'cart_items': get_cart_items(request),
-            'total_price': total_price,
-        }
+        cart_items = get_cart_items(request)
+        total_price = get_cart_total_price(request.session.get('cart', {}))
+        context = {'cart_items': cart_items, 'total_price': total_price}
         return render(request, 'handmade_watercolors/checkout.html', context)
         
         
