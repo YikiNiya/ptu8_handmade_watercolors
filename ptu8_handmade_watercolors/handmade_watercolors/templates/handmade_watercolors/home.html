@@ -15,7 +15,6 @@
 {% endblock style %}
 {% block content %}
   <h1>{% trans "Welcome"|capfirst %}!</h1>
-  <p>{% trans "Browse our products and categories" %}:</p>
   <div class="text-center">
     <div id="carouselExampleIndicators" class="carousel slide">
       <div class="carousel-indicators">
@@ -60,11 +59,6 @@
       </button>
     </div>
   </div>
-  <ul>
-    {% for category in categories %}
-      <li></li>
-    {% endfor %}
-  </ul>
 <style>
 .card {margin-bottom: 20px;}
 .card-container {width: 100%;}
