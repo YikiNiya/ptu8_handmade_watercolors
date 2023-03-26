@@ -88,7 +88,7 @@
             <div class="card-body">
               <h5 class="card-title">{{ product.name }}</h5>
               <p class="card-text">{{ product.description|safe }} €{{ product.price }}</p>
-              <a href="{% url 'product_detail' pk=product.pk %}" class="btn btn-primary">View product</a>
+              <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">View product</a>
             </div>
           </div>
         </div>

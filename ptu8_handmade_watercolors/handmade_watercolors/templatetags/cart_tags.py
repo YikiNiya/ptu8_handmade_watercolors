@@ -24,3 +24,12 @@ def get_cart_items(context):
 def total(cart_items):
     return sum(item.product.price * item.quantity for item in cart_items)
 
+@register.filter(name='currency')
+def currency(number):
+    return "€ "+str(number)
+
+
+
+@register.filter(name='multiply')
+def multiply(number , number1):
+    return number * number1

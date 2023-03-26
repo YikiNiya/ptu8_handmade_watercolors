@@ -3,7 +3,7 @@ from . import models
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'product', 'quantity', 'customer', 'date', 'status', 'order_total')
+    list_display = ('id', 'quantity', 'customer', 'date', 'status', 'order_total')
     list_filter = ('status', 'date')
     search_fields = ('customer__user__username', 'product__name')
     
@@ -14,7 +14,7 @@ class OrderItemAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'image_url', 'category', 'subcategory', 'price', 'status', 'stock_level')
+    list_display = ('name', 'image_url', 'category', 'quantity', 'subcategory', 'price', 'status', 'stock_level')
     list_filter = ('category', 'status')
     search_fields = ('name', 'description', 'category__name', 'subcategory__name')
 

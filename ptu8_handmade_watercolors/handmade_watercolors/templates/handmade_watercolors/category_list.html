@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>Categories</h1>
+  <form method="get" action="{% url 'category_list' %}">
+    <label for="search">Search:</label>
+    <input type="text" name="search" value="{{ request.GET.search }}">
+    <button type="submit">Go</button>
+  </form>
+  {% if subcategories %}
+    <h2>Subcategories</h2>
+    <ul>
+      {% for subcategory in subcategories %}
+        <li><a href="?subcategory_id={{ subcategory.id }}">{{ subcategory.name }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% if current_subcategory %}
+    <h2>{{ current_subcategory.name }}</h2>
+  {% endif %}
+  <ul>
+    {% for category in categories %}
+      <li><a href="{% url 'product_list' %}?category_id={{ category.id }}{% if current_subcategory %}&subcategory_id={{ current_subcategory.id }}{% endif %}">{{ category.name }}</a></li>
+    {% empty %}
+      <li>No categories found.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 from . import models
 from django.core.paginator import Paginator
@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from . forms import OrderForm, ProductReviewForm
 from .templatetags.cart_tags import get_cart_items, get_cart_total_price
 from django.db.models import Avg
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def home(request):
@@ -114,31 +115,49 @@ class SubcategoryListView(generic.ListView):
     context_object_name = 'subcategories'
 
 
-class OrderView(generic.View):
-    def get(self, request):
-        customer = request.session.get('customer')
-        orders = models.Order.objects.filter(customer=customer)
-        return render(request, 'handmade_watercolors/orders.html', {'orders': orders})
+class OrderView(LoginRequiredMixin, generic.ListView):
+    model = models.Order
+    template_name = 'handmade_watercolors/orders.html'
+    context_object_name = 'orders'
+    
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(customer__user=self.request.user)
+        return qs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        orders = context[self.context_object_name]
+        order_items = []
+        for order in orders:
+            items = models.OrderItem.objects.filter(order=order)
+            order_items.append({
+                'order': order,
+                'items': items,
+            })
+        context['order_items'] = order_items
+        return context
 
+    
 class CheckoutView(generic.View):
-    def get_checkout(self, request):
-        cart_items = get_cart_items(request)
-        total_price = get_cart_total_price(request.session.get('cart', {}))
-        context = {'cart_items': cart_items, 'total_price': total_price}
-        return render(request, 'handmade_watercolors/checkout.html', context)
-        
     def post(self, request):
         form = OrderForm(request.POST)
+        cart = request.session.get('cart', {})
+        
+        if not cart:
+            message = 'Your cart is empty'
+            return render(request, 'handmade_watercolors/cart.html', {'message': message})
+        
         if form.is_valid():
-            cart_items = request.session.get('cart_items', {})
-            order = models.Order()
+            order = form.save(commit=False)
             order.customer = request.user
-            order.customer_email = form.cleaned_data['email']
-            order.order_total = sum(item['item_price'] for item in cart_items.values())
+            order.order_total = sum(item['item_price'] for item in cart.values())
             order.status = 'pending'
             order.save()
-            for product_id, item in cart_items.items():
+            
+            order_items = []
+            
+            for product_id, item in cart.items():
                 product = models.Product.objects.get(pk=product_id)
                 order_item = models.OrderItem()
                 order_item.order = order
@@ -146,16 +165,73 @@ class CheckoutView(generic.View):
                 order_item.quantity = item['quantity']
                 order_item.price = item['item_price']
                 order_item.save()
-            request.session['cart_items'] = {}
+                order_items.append({
+                    'product': product.name,
+                    'price': item['item_price'],
+                    'quantity': item['quantity'],
+                    'total': item['item_price'] * item['quantity'],
+                })
+                
+            request.session['cart'] = {}
             message = 'Your order was successfully placed. Thank you!'
-            return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'message': message})
+            return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'message': message, 'cart': cart, 'order_items': order_items})
         else:
-            cart_items = request.session.get('cart_items', {})
-            return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart_items': cart_items})
-            
-@staticmethod
-def order_item_total(item):
-    return item.quantity * item.product.price
+            return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart': cart})
+
+
+# create view modelform 
+class OrderCreateView(generic.CreateView):
+    model = models.Order
+    form_class = OrderForm
+    template_name = 'handmade_watercolors/orders.html'
+    success_url = reverse_lazy('orders') 
+
+    def form_valid(self, form):
+        cart_items = self.request.session.get('cart_items', {})
+        order = form.save(commit=False)
+        order.customer = self.request.user
+        order.order_total = sum(item['item_price'] for item in cart_items.values())
+        order.status = 'pending'
+        order.save()
+
+        for product_id, item in cart_items.items():
+            product = models.Product.objects.get(pk=product_id)
+            order_item = models.OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=item['quantity'],
+                price=item['item_price'],
+            )
+
+        self.request.session['cart_items'] = {}
+        message = 'Your order was successfully placed. Thank you!'
+        return render(self.request, self.template_name, {'form': form, 'message': message})
+
+    def form_invalid(self, form):
+        cart_items = self.request.session.get('cart_items', {})
+        return render(self.request, self.template_name, {'form': form, 'cart_items': cart_items})
+    
+    def get_cart_items(self, request):
+        cart = request.session.get('cart', {})
+        cart_items = []
+        for product_id, item in cart.items():
+            product = models.Product.objects.get(id=product_id)
+            cart_items.append({
+                'product': product,
+                'quantity': item['quantity'],
+                'price': item['price']
+            })
+        return cart_items
+        
+    @staticmethod
+    def order_item_total(item):
+        return item.quantity * item.product.price
+    
+def empty_cart(request):
+    if not request.session.get('cart'):
+        return render(request, 'handmade_watercolors/empty_cart.html')
+    request.session['cart'] = {}
+    return redirect('products')
 
 @login_required
 def cart(request):

@@ -19,10 +19,12 @@ class Product(models.Model):
     description = HTMLField(max_length=250, default='', blank=True, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     image_url = models.CharField(max_length=400, null=True, blank=True)
+    quantity = models.IntegerField(null=False, blank=False, default=0)
     stock_level = models.IntegerField(default=0)
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='products')
     subcategory = models.ForeignKey('Subcategory', on_delete=models.CASCADE, related_name='products', null=True, default=None)
     status = models.CharField(max_length=20, choices=STATUS_CHOICE, default='available')
+    
     def __str__(self):
         return self.name
     
@@ -45,8 +47,8 @@ class Order(models.Model):
         ('canceled', 'Canceled'),
     )
 
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
+    product = models.ManyToManyField(Product, related_name='orders')
+    quantity = models.IntegerField(null=False, blank=False, default=1)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     date = models.DateTimeField(default=timezone.now)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
@@ -56,6 +58,10 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Order {self.id}'    
+    
+    @staticmethod
+    def get_orders_by_customer(customer_id):
+        return Order.objects.filter(customer=customer_id).order_by('-date') 
 
 
 class OrderItem(models.Model):
