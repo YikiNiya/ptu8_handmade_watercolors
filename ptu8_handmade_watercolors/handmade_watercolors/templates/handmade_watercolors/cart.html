@@ -28,6 +28,7 @@
       <div class="row mb-4">
         <div class="col-md-4">
           <div class="card">
+            <img class="card-img-top" src="{{ item.product.image_url }}" alt="Product Image">
             <div class="card-body">
               <h5 class="card-title">{{ item.product.name }}</h5>
               <p class="card-text">{{ item.product.description|safe }}</p>
@@ -71,10 +72,20 @@
         </form>
       </div>
     </div>
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <a href="{% url 'product_list' %}" class="btn btn-secondary">Back to Products</a>
+      </div>
+    </div>
   {% else %}
     <div class="row mb-4">
       <div class="col-md-12">
         <h1>Your cart is empty.</h1>
+      </div>
+    </div>
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <a href="{% url 'product_list' %}" class="btn btn-secondary">Back to Products</a>
       </div>
     </div>
   {% endif %}

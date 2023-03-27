@@ -3,9 +3,9 @@ from . import models
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'quantity', 'customer', 'date', 'status', 'order_total')
+    list_display = ('id', 'customer', 'order_total', 'status', 'date')
     list_filter = ('status', 'date')
-    search_fields = ('customer__user__username', 'product__name')
+    search_fields = ('customer__user__username', 'id')
     
 
 class OrderItemAdmin(admin.ModelAdmin):

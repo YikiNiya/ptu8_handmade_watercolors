@@ -30,7 +30,7 @@ class Product(models.Model):
     
 
 class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')
     phone = models.CharField(max_length=15, default='')
     shipping_address = models.TextField()
 
@@ -47,12 +47,27 @@ class Order(models.Model):
         ('canceled', 'Canceled'),
     )
 
-    product = models.ManyToManyField(Product, related_name='orders')
-    quantity = models.IntegerField(null=False, blank=False, default=1)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    first_name = models.CharField(max_length=100, default='')
+    last_name = models.CharField(max_length=100, default='')
+    email = models.EmailField()
+    country = models.CharField(max_length=100, default='')
+    city = models.CharField(max_length=100, default='')
+    zip_code = models.CharField(max_length=20, default='')
+    shipping_address = models.CharField(max_length=200, default='')
+    phone_number = models.CharField(max_length=20, default='')
+    card_number = models.CharField(max_length=20, default='0000-0000-0000-0000')
+    PAYMENT_CHOICE = (
+        ('debit_card', 'Debit card'),
+        ('credit_card', 'Credit Card'),
+        ('paypal', 'PayPal'),
+    )
+
+    payment_method = models.CharField(max_length=50, choices=PAYMENT_CHOICE, default='debit_card')
+    name_on_card = models.CharField(max_length=100,  default='')
+    expiration_date = models.CharField(max_length=10, default='')
+    cvv = models.CharField(max_length=4, default='')
     date = models.DateTimeField(default=timezone.now)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    customer_email = models.EmailField()
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='orders')
     order_total = models.DecimalField(max_digits=6, decimal_places=2)
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICE, default='pending')
 
@@ -69,6 +84,9 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def get_total_price(self):
+        return self.quantity * self.price
 
 
 class Category(models.Model):

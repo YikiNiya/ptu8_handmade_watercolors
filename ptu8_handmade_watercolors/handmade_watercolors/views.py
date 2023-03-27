@@ -138,52 +138,73 @@ class OrderView(LoginRequiredMixin, generic.ListView):
         context['order_items'] = order_items
         return context
 
+
+class OrderDetailView(LoginRequiredMixin, generic.DetailView):
+    model = models.Order
+    template_name = 'handmade_watercolors/order_detail.html'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(customer=self.request.user.customer)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order = self.get_object()
+        order_items = order.orderitem_set.all()
+        context['order_items'] = order_items
+        context['total'] = sum(item.get_total_price() for item in order_items)
+        return context
+
+
     
 class CheckoutView(generic.View):
     def post(self, request):
         form = OrderForm(request.POST)
         cart = request.session.get('cart', {})
-        
+        cart_items = []
+        total_price = 0
+        for product_id, item_data in cart.items():
+            product = get_object_or_404(models.Product, id=product_id)
+            item_price = product.price * item_data['quantity']
+            total_price += item_price
+            cart_items.append({
+                'product': product,
+                'quantity': item_data['quantity'],
+                'item_price': item_price,
+            })
         if not cart:
-            message = 'Your cart is empty'
-            return render(request, 'handmade_watercolors/cart.html', {'message': message})
+            messages.error(self.request, ('Your cart is empty'))
+            return render(request, 'handmade_watercolors/cart.html')
         
         if form.is_valid():
             order = form.save(commit=False)
-            order.customer = request.user
-            order.order_total = sum(item['item_price'] for item in cart.values())
+            order.customer = request.user.customer
+            order.order_total = total_price
             order.status = 'pending'
-            order.save()
-            
-            order_items = []
-            
+            order.save() 
+
             for product_id, item in cart.items():
                 product = models.Product.objects.get(pk=product_id)
                 order_item = models.OrderItem()
                 order_item.order = order
                 order_item.product = product
                 order_item.quantity = item['quantity']
-                order_item.price = item['item_price']
+                order_item.price = product.price
                 order_item.save()
-                order_items.append({
-                    'product': product.name,
-                    'price': item['item_price'],
-                    'quantity': item['quantity'],
-                    'total': item['item_price'] * item['quantity'],
-                })
-                
-            request.session['cart'] = {}
-            message = 'Your order was successfully placed. Thank you!'
-            return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'message': message, 'cart': cart, 'order_items': order_items})
+
+    
+            request.session['cart_items'] = {}
+            messages.success(self.request, ('Your order was successfully placed. Thank you!'))
+            return redirect('orders')
         else:
-            return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart': cart})
+            messages.error(self.request, ('There was an error processing your order. Please check the form and try again.'))
+            return render(request, 'handmade_watercolors/checkout.html', {'form': form, 'cart': cart, 'cart_items': cart_items, 'total_price': total_price})
 
 
-# create view modelform 
 class OrderCreateView(generic.CreateView):
     model = models.Order
     form_class = OrderForm
-    template_name = 'handmade_watercolors/orders.html'
+    template_name = 'handmade_watercolors/checkout.html'
     success_url = reverse_lazy('orders') 
 
     def form_valid(self, form):
@@ -192,40 +213,41 @@ class OrderCreateView(generic.CreateView):
         order.customer = self.request.user
         order.order_total = sum(item['item_price'] for item in cart_items.values())
         order.status = 'pending'
-        order.save()
-
-        for product_id, item in cart_items.items():
-            product = models.Product.objects.get(pk=product_id)
-            order_item = models.OrderItem.objects.create(
-                order=order,
-                product=product,
-                quantity=item['quantity'],
-                price=item['item_price'],
-            )
-
-        self.request.session['cart_items'] = {}
-        message = 'Your order was successfully placed. Thank you!'
-        return render(self.request, self.template_name, {'form': form, 'message': message})
-
+        if form.is_valid():
+            order.save()
+            for product_id, item in cart_items.items():
+                product = models.Product.objects.get(pk=product_id)
+                order_item = models.OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=item['quantity'],
+                    price=item['item_price'],
+                )
+            self.request.session['cart_items'] = {}
+            messages.success(self.request, ('Your order was successfully placed. Thank you!'))
+            return redirect(self.request, self.template_name, {'form': form})
+        else:
+            return self.form_invalid(form)
+        
     def form_invalid(self, form):
         cart_items = self.request.session.get('cart_items', {})
         return render(self.request, self.template_name, {'form': form, 'cart_items': cart_items})
     
-    def get_cart_items(self, request):
-        cart = request.session.get('cart', {})
-        cart_items = []
-        for product_id, item in cart.items():
-            product = models.Product.objects.get(id=product_id)
-            cart_items.append({
-                'product': product,
-                'quantity': item['quantity'],
-                'price': item['price']
-            })
-        return cart_items
-        
-    @staticmethod
-    def order_item_total(item):
-        return item.quantity * item.product.price
+def get_cart_items(self, request):
+    cart = request.session.get('cart', {})
+    cart_items = []
+    for product_id, item in cart.items():
+        product = models.Product.objects.get(id=product_id)
+        cart_items.append({
+            'product': product,
+            'quantity': item['quantity'],
+            'price': item['price']
+        })
+    return cart_items
+    
+@staticmethod
+def order_item_total(item):
+    return item.quantity * item.product.price
     
 def empty_cart(request):
     if not request.session.get('cart'):

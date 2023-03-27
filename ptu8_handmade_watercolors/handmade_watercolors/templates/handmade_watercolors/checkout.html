@@ -141,19 +141,13 @@ form {
             <div class="card-body">
               <h6>Order Summary</h6>
                 <hr>
-                {% for item in cart.items %}
+                {% for item in cart_items %}
                 <div class="row">
                   <div class="col-md-6">
                     <p>Product:</p>
                   </div>
                 <div class="col-md-6">
                   <p class="text-right">{{ item.product }}</p>
-                </div>
-                <div class="col-md-6">
-                  <p>Price:</p>
-                </div>
-                <div class="col-md-6">
-                  <p class="text-right">€{{ item.price }}</p>
                 </div>
                 <div class="col-md-6">
                   <p>Quantity:</p>
@@ -165,7 +159,7 @@ form {
                   <p>Total:</p>
                 </div>
                 <div class="col-md-6">
-                  <p class="text-right">€{{ item.total }}</p>
+                  <p class="text-right">€{{ item.item_price }}</p>
                 </div>
               </div>
                 <hr>
@@ -177,15 +171,5 @@ form {
     </div>
   </div>            
 </form>
-{% block extra_js %}
-  <script>
-    document.getElementById("place-order-btn").addEventListener("click", function(event) {
-      event.preventDefault(); 
-      if (confirm("Are you sure you want to place the order?")) {
-        document.forms[0].submit();
-        alert("Order placed successfully!");
-      }
-    });
-  </script>
-{% endblock %}
+
 {% endblock %}
