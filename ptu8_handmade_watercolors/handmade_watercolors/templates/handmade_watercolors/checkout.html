@@ -1,66 +1,21 @@
 {% extends 'base.html' %}
 {% load cart_tags %}
 {% block style %}
-table {
-  border-collapse: collapse;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-th, td {
-  padding: 12px 15px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
-
-tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
+table {border-collapse: collapse; width: 100%; max-width: 800px; margin: 0 auto;}
+th, td {padding: 12px 15px; text-align: left; border: 1px solid #ddd;}
+th {background-color: #f2f2f2; font-weight: bold;}
+tr:nth-child(even) {background-color: #f9f9f9;}
 tbody td:last-child,
-tfoot td:last-child {
-  font-weight: bold;
-}
-
-.btn {
-  margin-top: 8px;
-}
-
-.text-right {
-  text-align: right;
-}
-form {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.form-group {
-  flex-basis: 50%;
-  padding: 5px;
-  box-sizing: border-box;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
+tfoot td:last-child {font-weight: bold;}
+.btn {margin-top: 8px;}
+.text-right {text-align: right;}
+form {display: flex; flex-wrap: wrap;}
+.form-group {flex-basis: 50%; padding: 5px; box-sizing: border-box;}
+.form-group label {display: block; margin-bottom: 5px;}
 .form-group input,
-.form-group select {
-  width: 100%;
-  box-sizing: border-box;
-}
-
+.form-group select {width: 100%; box-sizing: border-box;}
 @media only screen and (max-width: 600px) {
-  .form-group {
-    flex-basis: 100%;
-  }
+  .form-group {flex-basis: 100%;}
 }
 {% endblock style %}
 {% block content %}
