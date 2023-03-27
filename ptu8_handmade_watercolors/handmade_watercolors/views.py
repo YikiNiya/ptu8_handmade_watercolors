@@ -7,7 +7,6 @@ from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from . forms import OrderForm, ProductReviewForm
-from .templatetags.cart_tags import get_cart_items, get_cart_total_price
 from django.db.models import Avg
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -154,7 +153,6 @@ class OrderDetailView(LoginRequiredMixin, generic.DetailView):
         context['order_items'] = order_items
         context['total'] = sum(item.get_total_price() for item in order_items)
         return context
-
 
     
 class CheckoutView(generic.View):
