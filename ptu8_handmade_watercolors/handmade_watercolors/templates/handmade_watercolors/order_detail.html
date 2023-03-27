@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
-
+{% block style %}
+.badge {font-size: 0.8em; padding: 0.2em 0.5em; border-radius: 0.25em;}
+.badge-success {background-color: #28a745; color: white;}
+{% endblock style %}  
 {% block content %}
 {% load cart_tags %}
 <div class="container">
