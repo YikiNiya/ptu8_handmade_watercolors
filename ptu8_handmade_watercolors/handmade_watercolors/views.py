@@ -231,21 +231,6 @@ class OrderCreateView(generic.CreateView):
         cart_items = self.request.session.get('cart_items', {})
         return render(self.request, self.template_name, {'form': form, 'cart_items': cart_items})
     
-def get_cart_items(self, request):
-    cart = request.session.get('cart', {})
-    cart_items = []
-    for product_id, item in cart.items():
-        product = models.Product.objects.get(id=product_id)
-        cart_items.append({
-            'product': product,
-            'quantity': item['quantity'],
-            'price': item['price']
-        })
-    return cart_items
-    
-@staticmethod
-def order_item_total(item):
-    return item.quantity * item.product.price
     
 def empty_cart(request):
     if not request.session.get('cart'):
